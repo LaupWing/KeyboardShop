@@ -17,6 +17,5 @@ router
                 .send(e)
         }
     })
-
-
+    
 module.exports = router

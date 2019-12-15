@@ -51,6 +51,11 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Your password cannot contain password!')
             }
         }
+    },
+    role:{
+        type: String,
+        required: true,
+        default: 'Visitor'
     }
 
 })
