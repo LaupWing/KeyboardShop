@@ -1,46 +1,22 @@
 const mongoose = require('mongoose')
 
-const productSchema = new mongoose.Schema({
-    name:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    description:{
-        type: String,
-        required: true,
-        trim: true
-    },
-    category: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    color:{
-        type: String
-    },
-    stock:{
-        type: Number,
-        required: true
-    },
-    images:[{
-        image:{
-            name:{
+const ordersSchema = new mongoose.Schema({
+    products: [{
+        product:{
+            productId:{
                 type: String,
                 required: true
             },
-            path:{
-                type: String,
-                required: true
-            },
-            position:{
+            quantity:{
                 type: Number,
                 required: true
             }
         }
     }]
+},{
+    timestamps: true
 })
 
-const Product = mongoose.model('product', productSchema)
+const Orders = mongoose.model('orders', ordersSchema)
 
-module.exports = Product
+module.exports = Orders
