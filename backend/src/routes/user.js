@@ -3,6 +3,17 @@ const router = new express.Router()
 const User = require('../models/user.js')
 
 router
+    .post('/login', async(req,res)=>{
+        try{
+            const user = await User.findByCredentials(req.body.email, req.body.password)
+            res.send(user)
+        }catch(e){
+            res.status(e).json({
+                message: e.message,
+                type: 'error'
+            })
+        }
+    })
     .get('/user', (req,res)=>{
         res.send('user home page')
     })
