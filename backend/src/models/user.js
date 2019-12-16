@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator') // A validation package for validating email src: https://www.npmjs.com/package/validator
 const bcrypt = require('bcrypt') // To crypt the raw password
-
+const jwt = require('jsonwebtoken')
 // Schema.________________________________
 // ---------------------------------------
 // Schema is set to define the structure of the individual data stored in the users database
@@ -58,9 +58,30 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: 'basic',
         enum: ['basic', 'admin']
-    }
+    },
+    // I have made a tokens array instead of a token object because it allows the user to login on multiple devices
+    // Otherwis if the user didnt logout he cant login on another device
+    tokens:[{
+        token:{
+            type: String,
+            required: true
+        }
+    }]
 
 })
+
+
+// Whats the diffrence between methods and statics
+// The main diffrrence is that the statics method lifes on the model of mongoose
+// And the method methods lives on the instance of the model. On the instance you can acces the user info (this, which is the userinfo itself)
+
+userSchema.methods.generateAuthToken = async function(){
+    const user = this
+    const token = jwt.sign({_id:user._id.toString()}, process.env.JWT_SECRET)
+    user.tokens = user.tokens.concat({token})
+    await user.save() // saving the updated tokens array to the database
+    return token // returning the logged in token
+}
 
 userSchema.statics.findByCredentials = async (email,password) =>{
     const user = await User.findOne({email})
