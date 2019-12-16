@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator') // A validation package for validating email src: https://www.npmjs.com/package/validator
+const bcrypt = require('bcrypt') // To crypt the raw password
 
 // Schema.________________________________
 // ---------------------------------------
@@ -59,6 +60,25 @@ const userSchema = new mongoose.Schema({
         enum: ['basic', 'admin']
     }
 
+})
+
+userSchema.statics.findByCredentials = async (email,password) =>{
+    const user = await User.findOne({email})
+    if(!user){
+        throw new Error('Unable to login')
+    }
+
+}
+
+// Method that runs before the user is saved to the database
+userSchema.pre('save', async function(next){
+    console.log('------------------------before saving to db------------------------')
+    const user = this
+    
+    if(user.isModified('password')){
+        user.password = await bcrypt.hash(user.password, 8) // The 8 is the amount of hashings
+    }
+    next() // This methods needs to be called aftere the function is finished, otherwise it thinks the function is not ending   
 })
 
 const User = mongoose.model('User', userSchema)

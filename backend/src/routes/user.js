@@ -19,5 +19,14 @@ router
                 .send(e)
         }
     })
+    .patch('/user', async(req,res)=>{
+        const updates = Object.keys(req.body)
+        const isAllowed = ['name', 'email', 'password', 'age']
+        const isValid = updates.every(update=>isAllowed.includes(update))
+        if(!isValid){
+            return res.status(400).json({error: 'Invalid field update'})
+        }
+        res.send(user)
+    })
     
 module.exports = router
