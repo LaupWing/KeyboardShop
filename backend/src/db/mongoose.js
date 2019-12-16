@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
-
-mongoose.connect( 'mongodb://127.0.0.1:27017/keyboardshop-api',{
+mongoose.connect(process.env.MONGO_CONNECTION,{
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true

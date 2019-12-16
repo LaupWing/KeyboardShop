@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "env-cmd -f ./config/.env nodemon src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +13,9 @@
     "express": "^4.17.1",
     "mongoose": "^5.8.1",
     "validator": "^12.1.0"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.0.1",
+    "nodemon": "^2.0.2"
   }
 }
