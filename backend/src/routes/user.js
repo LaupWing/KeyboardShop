@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
-const User = require('../models/user.js')
+const User = require('../models/user')
+const auth = require('../middleware/auth')
 
 router
     .post('/login', async(req,res)=>{
@@ -15,9 +16,12 @@ router
             })
         }
     })
-    .get('/user', (req,res)=>{
-        res.send('user home page')
+    .get('/user',auth, (req,res)=>{
+        res.json(req.user)
     })
+    // .get('/users', auth, (req,res)=>{
+    //     res.send('user home page')
+    // })
     .post('/user', async (req,res)=>{
         const newUser = new User(req.body)
         console.log(req.body)
@@ -32,7 +36,7 @@ router
                 .send(e)
         }
     })
-    .patch('/user', async(req,res)=>{
+    .patch('/user', auth, async(req,res)=>{
         const updates = Object.keys(req.body)
         const isAllowed = ['name', 'email', 'password', 'age']
         const isValid = updates.every(update=>isAllowed.includes(update))
