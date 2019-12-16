@@ -23,7 +23,8 @@ router
         console.log(req.body)
         try{
             await newUser.save()
-            res.status(201).send(newUser)
+            const token = await user.generateAuthToken()
+            res.status(201).send({user: newUser, token})
         }
         catch(e){
             res
