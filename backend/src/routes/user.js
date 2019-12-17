@@ -41,6 +41,12 @@ router
         }
     })
     .post('/user', async (req,res)=>{
+        if(Object.keys(req.body).includes('role')){
+            return res.status(400).json({
+                type: 'error',
+                message: 'You cant set the user role'
+            })
+        }
         const newUser = new User(req.body)
         try{
             await newUser.save()
@@ -48,7 +54,6 @@ router
             res.status(201).send({user: newUser, token})
         }
         catch(e){
-            console.log(e)
             res
                 .status(400)
                 .send(e.message)
@@ -88,6 +93,34 @@ router
         }
         res.send(user)
     })
+    .patch('/user/:id', auth, async(req,res)=>{
+        const updates = Object.keys(req.body)
+        const updatesVal = Object.values(req.body)
+        const isAllowed = ['role']
+        const isAllowedVal = ['basic', 'admin']
+        const isValid = updates.every(update=>isAllowed.includes(update))
+        const isValidVal = updatesVal.every(update=>isAllowedVal.includes(update))
+        
+        if(!isValid||!isValidVal){
+            return res.status(400).json({error: 'Invalid field update'})
+        }
+        try{
+            const user = await User.findByIdAndUpdate(req.params.id, req.body, {new:true, runValidators: true})
+
+            if(!user){
+                return res.status(404).json({
+                    type: 'error',
+                    message: 'User not found'
+                })
+            }
+            res.json(user)
+        }catch(e){
+            res.status(400).json({
+                type: 'error',
+                message: e.message
+            })
+        }
+    })
     .delete('/user', auth, grantAcces('deleteOwn', 'profile'), async(req,res)=>{
         try{
             await req.user.remove() // this is the same as user.findByIdAndDelete
@@ -107,7 +140,7 @@ router
                 })
             }
             res.json({
-                type: 'succes',
+                type: 'deleted',
                 message: 'User is succesfully deleted',
                 data:user
             })
