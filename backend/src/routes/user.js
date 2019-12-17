@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const User = require('../models/user')
+const Cart = require('../models/cart')
 const auth = require('../middleware/auth')
 
 router
@@ -22,18 +23,38 @@ router
     // .get('/users', auth, (req,res)=>{
     //     res.send('user home page')
     // })
+    .post('/user/cart',auth, async (req,res)=>{
+        console.log(req.body)
+        const products = [req.body]
+        console.log(products)
+        const cart = new Cart({
+            products: [{
+                productId: 'test',
+                quantity: 2
+            }],
+            owner: req.user._id
+        })
+        try{
+            await cart.save()
+            res.status(201).send(cart)
+        }catch(e){
+            console.log(e)
+            res.status(400).send(e.message)
+        }
+    })
     .post('/user', async (req,res)=>{
         const newUser = new User(req.body)
         console.log(req.body)
         try{
             await newUser.save()
-            const token = await user.generateAuthToken()
+            const token = await newUser.generateAuthToken()
             res.status(201).send({user: newUser, token})
         }
         catch(e){
+            console.log(e)
             res
                 .status(400)
-                .send(e)
+                .send(e.message)
         }
     })
     .post('/user/logoutAll', auth, async(req,res)=>{
@@ -61,7 +82,22 @@ router
         if(!isValid){
             return res.status(400).json({error: 'Invalid field update'})
         }
+        try{
+            updates.forEach(update=>req.user[update] = req.body[update])
+            await req.user.save()
+            res.send(req.user)
+        }catch(e){
+            res.status(400).send()
+        }
         res.send(user)
     })
-    
+    .delete('/user', auth, async(req,res)=>{
+        try{
+            await req.user.remove() // this is the same as user.findByIdAndDelete
+            res.send(req.user)
+        }catch(e){
+            res.status(500).send(e.message)
+        }
+    })
+
 module.exports = router
