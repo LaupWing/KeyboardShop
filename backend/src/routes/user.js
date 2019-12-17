@@ -12,7 +12,7 @@ router
             const token = await user.generateAuthToken()
             res.send({user, token})
         }catch(e){
-            res.status(e).json({
+            res.status(500).json({
                 message: e.message,
                 type: 'error'
             })
@@ -88,7 +88,7 @@ router
         }
         res.send(user)
     })
-    .delete('/user', auth, async(req,res)=>{
+    .delete('/user', auth, grantAcces('deleteOwn', 'profile'), async(req,res)=>{
         try{
             await req.user.remove() // this is the same as user.findByIdAndDelete
             res.send(req.user)
@@ -96,7 +96,7 @@ router
             res.status(500).send(e.message)
         }
     })
-    .delete('/user/:id', auth,grantAcces('deleteAny', 'profile'), async(req,res)=>{
+    .delete('/user/:id', auth, grantAcces('deleteAny', 'profile'), async(req,res)=>{
         const id = req.params.id
         try{
             const user = await User.findByIdAndDelete(id)

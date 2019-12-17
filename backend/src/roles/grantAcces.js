@@ -1,6 +1,7 @@
 const {roles} = require('./roles')
 const grantAcces  = function(action,resource){
     return async (req,res,next)=>{
+        console.log(req.user)
         try{
             const permission = roles.can(req.user.role)[action](resource)
             if(!permission.granted){
