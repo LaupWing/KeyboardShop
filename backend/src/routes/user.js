@@ -3,6 +3,7 @@ const router = new express.Router()
 const User = require('../models/user')
 const Cart = require('../models/cart')
 const auth = require('../middleware/auth')
+const grantAcces = require('../roles/grantAcces')
 
 router
     .post('/login', async(req,res)=>{
@@ -20,18 +21,14 @@ router
     .get('/user',auth, (req,res)=>{
         res.json(req.user)
     })
-    // .get('/users', auth, (req,res)=>{
-    //     res.send('user home page')
-    // })
+    .get('/users', auth, grantAcces('readAny', 'profile'), (req,res)=>{
+        res.send('user home page')
+    })
     .post('/user/cart',auth, async (req,res)=>{
-        console.log(req.body)
         const products = [req.body]
-        console.log(products)
+
         const cart = new Cart({
-            products: [{
-                productId: 'test',
-                quantity: 2
-            }],
+            products,
             owner: req.user._id
         })
         try{

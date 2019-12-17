@@ -2,7 +2,10 @@ const express = require('express')
 const router = new express.Router()
 
 router
-    .get('/all', (req,res)=>{
+    .get('/products/all', (req,res)=>{
+        res.send('all products')
+    })
+    .get('/products/all', (req,res)=>{
         res.send('all products')
     })
 
