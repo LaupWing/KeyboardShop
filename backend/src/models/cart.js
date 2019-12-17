@@ -16,14 +16,15 @@ const cartSchema = new mongoose.Schema({
         default: false,
         required: true,
     },
-    // owner:{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     required: true
-    // }
+    owner:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    }
 },{
     timestamps: true
 })
 
-const Cart = mongoose.model('cart', cartSchema)
+const Cart = mongoose.model('Cart', cartSchema)
 
 module.exports = Cart

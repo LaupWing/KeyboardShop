@@ -71,6 +71,12 @@ const userSchema = new mongoose.Schema({
 })
 
 
+userSchema.virtual('cart', {
+    ref: 'Cart',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
 // Whats the diffrence between methods and statics
 // The main diffrrence is that the statics method lifes on the model of mongoose
 // And the method methods lives on the instance of the model. On the instance you can acces the user info (this, which is the userinfo itself)

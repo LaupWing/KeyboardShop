@@ -25,21 +25,6 @@ router
         const users = await User.find({})
         res.json(users)
     })
-    .post('/user/cart',auth, async (req,res)=>{
-        const products = [req.body]
-
-        const cart = new Cart({
-            products,
-            owner: req.user._id
-        })
-        try{
-            await cart.save()
-            res.status(201).send(cart)
-        }catch(e){
-            console.log(e)
-            res.status(400).send(e.message)
-        }
-    })
     .post('/user', async (req,res)=>{
         if(Object.keys(req.body).includes('role')){
             return res.status(400).json({
@@ -47,7 +32,9 @@ router
                 message: 'You cant set the user role'
             })
         }
+        console.log(req.body)
         const newUser = new User(req.body)
+        console.log(newUser)
         try{
             await newUser.save()
             const token = await newUser.generateAuthToken()
