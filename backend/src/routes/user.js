@@ -36,6 +36,15 @@ router
                 .send(e)
         }
     })
+    .post('/user/logoutAll', auth, async(req,res)=>{
+        try{
+            req.user.tokens = []
+            req.user.save()
+            res.send()
+        }catch(e){
+            res.status(500).send(e.message)
+        }
+    })
     .post('/user/logout', auth, async(req,res)=>{
         try{
             req.user.tokens = req.user.tokens.filter(token=>token.token!==req.token)
