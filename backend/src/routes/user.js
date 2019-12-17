@@ -21,8 +21,9 @@ router
     .get('/user',auth, (req,res)=>{
         res.json(req.user)
     })
-    .get('/users', auth, grantAcces('readAny', 'profile'), (req,res)=>{
-        res.send('user home page')
+    .get('/users', auth, grantAcces('readAny', 'profile'), async (req,res)=>{
+        const users = await User.find({})
+        res.json(users)
     })
     .post('/user/cart',auth, async (req,res)=>{
         const products = [req.body]
@@ -41,7 +42,6 @@ router
     })
     .post('/user', async (req,res)=>{
         const newUser = new User(req.body)
-        console.log(req.body)
         try{
             await newUser.save()
             const token = await newUser.generateAuthToken()
@@ -94,6 +94,28 @@ router
             res.send(req.user)
         }catch(e){
             res.status(500).send(e.message)
+        }
+    })
+    .delete('/user/:id', auth,grantAcces('deleteAny', 'profile'), async(req,res)=>{
+        const id = req.params.id
+        try{
+            const user = await User.findByIdAndDelete(id)
+            if(!user){
+                res.json({
+                    type: 'error',
+                    message: 'Cant find this user'
+                })
+            }
+            res.json({
+                type: 'succes',
+                message: 'User is succesfully deleted',
+                data:user
+            })
+        }catch(e){
+            res.status(500).json({
+                type: 'error',
+                message: 'Cannot find the user with this id'
+            })
         }
     })
 

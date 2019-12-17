@@ -5,7 +5,6 @@ exports.roles = (function(){
     ac
         .grant('basic')
         .readOwn('profile')
-        .createOwn('profile')
         .updateOwn('profile')
     ac
         .grant('admin')
