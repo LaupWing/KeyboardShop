@@ -75,6 +75,17 @@ const userSchema = new mongoose.Schema({
 // The main diffrrence is that the statics method lifes on the model of mongoose
 // And the method methods lives on the instance of the model. On the instance you can acces the user info (this, which is the userinfo itself)
 
+userSchema.methods.toJSON = function(){ // behind the scenes at res.send the toJSON method is getting called
+    // Thats why everytime the userobjec got send to the client this method will be called
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.password
+    delete userObject.tokens
+    
+    return userObject
+}
+
 userSchema.methods.generateAuthToken = async function(){
     const user = this
     const token = jwt.sign({_id:user._id.toString()}, process.env.JWT_SECRET)
